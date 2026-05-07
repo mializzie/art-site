@@ -1,0 +1,40 @@
+{
+  "site": {
+    "title": "My Creative Portfolio",
+    "subtitle": "Art · Music · Animation"
+  },
+
+  "artwork": [
+    {
+      "id": "art-1",
+      "image": "images/artwork/piece1.jpg",
+      "title": "Untitled No. 1",
+      "description": "Add your description here — medium, inspiration, year, or anything you'd like visitors to know."
+    },
+    {
+      "id": "art-2",
+      "image": "images/artwork/piece2.jpg",
+      "title": "Untitled No. 2",
+      "description": "Replace this with your own description."
+    }
+  ],
+
+  "music": [
+    {
+      "id": "song-1",
+      "youtubeId": "dQw4w9WgXcQ",
+      "title": "Song Title – Artist Name",
+      "relatedArtwork": "Untitled No. 1",
+      "description": "Notes about why this song connects to the artwork — mood, story, inspiration."
+    }
+  ],
+
+  "animations": [
+    {
+      "id": "gif-1",
+      "image": "images/animations/anim1.gif",
+      "title": "Untitled Animation",
+      "description": "Tools used, what this is, the story behind it."
+    }
+  ]
+}
