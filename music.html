@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Music – My Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --burgundy: #541431;
+      --magenta:  #A02F62;
+      --lavender: #9072A0;
+      --plum:     #7A3870;
+      --indigo:   #584585;
+      --sand:     #CDBD8F;
+      --sage:     #849F76;
+      --slate:    #758FA8;
+      --bg:       #1a0a12;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: var(--bg);
+      color: var(--sand);
+      font-family: 'Crimson Pro', serif;
+      min-height: 100vh;
+    }
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background:
+        radial-gradient(ellipse at 80% 10%, rgba(88,69,133,0.45) 0%, transparent 55%),
+        radial-gradient(ellipse at 15% 85%, rgba(84,20,49,0.45) 0%, transparent 50%);
+      pointer-events:none; z-index:0;
+    }
+
+    /* NAV */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      background: linear-gradient(90deg, var(--burgundy) 0%, var(--plum) 50%, var(--indigo) 100%);
+      border-bottom: 2px solid var(--magenta);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:0 2.5rem; height:64px;
+      box-shadow: 0 4px 24px rgba(160,47,98,0.4);
+    }
+    .nav-logo {
+      font-family:'Cinzel Decorative',serif; font-size:1.15rem;
+      color:var(--sand); letter-spacing:0.12em; text-decoration:none;
+    }
+    .nav-links { display:flex; gap:0.4rem; list-style:none; }
+    .nav-links a {
+      display:block; padding:0.45rem 1.1rem; border-radius:4px;
+      font-family:'Cinzel Decorative',serif; font-size:0.72rem;
+      letter-spacing:0.08em; color:var(--sand); text-decoration:none;
+      border:1px solid transparent; transition:background 0.2s, border-color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      background:rgba(205,189,143,0.12); border-color:var(--sand); color:#fff;
+    }
+
+    /* PAGE */
+    .page { position:relative; z-index:1; padding: 100px 2rem 4rem; max-width:900px; margin:0 auto; }
+    .page-title {
+      font-family:'Cinzel Decorative',serif;
+      font-size: clamp(1.6rem,4vw,2.8rem);
+      background: linear-gradient(135deg, var(--sand), var(--sage));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      margin-bottom:0.4rem;
+    }
+    .page-sub { font-style:italic; color:var(--sage); margin-bottom:2rem; font-size:1.05rem; }
+
+    .instructions {
+      background: rgba(88,69,133,0.2);
+      border: 1px dashed var(--indigo);
+      border-radius: 8px;
+      padding: 1rem 1.4rem;
+      margin-bottom: 2.5rem;
+      font-size: 0.9rem;
+      color: var(--slate);
+      line-height: 1.7;
+    }
+    .instructions strong { color: var(--sand); }
+    .instructions code {
+      background: rgba(205,189,143,0.1);
+      padding: 0.1em 0.4em;
+      border-radius: 3px;
+      font-size: 0.85em;
+    }
+
+    /* MUSIC LIST */
+    .music-list { display:flex; flex-direction:column; gap:2rem; }
+
+    .music-card {
+      background: rgba(84,20,49,0.3);
+      border: 1px solid var(--plum);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: box-shadow 0.25s;
+    }
+    .music-card:hover { box-shadow: 0 10px 40px rgba(132,159,118,0.2); }
+
+    .music-card .music-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 1.3rem 1.5rem 0.8rem;
+      gap: 1rem;
+    }
+    .music-card .music-meta { flex: 1; }
+    .music-card .music-title {
+      font-family:'Cinzel Decorative',serif;
+      font-size: 0.9rem; letter-spacing:0.07em;
+      color: var(--sand); margin-bottom: 0.35rem;
+    }
+    .music-card .music-artwork-ref {
+      font-size: 0.8rem; color: var(--sage); font-style: italic;
+    }
+    .music-card .music-desc {
+      padding: 0 1.5rem 1rem;
+      font-size: 0.95rem; color: #c4ae80;
+      font-style: italic; line-height: 1.65;
+    }
+
+    /* YouTube embed */
+    .yt-wrap {
+      position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;
+      border-top: 1px solid rgba(122,56,112,0.4);
+    }
+    .yt-wrap iframe {
+      position:absolute; top:0; left:0; width:100%; height:100%;
+      border:none;
+    }
+    .yt-placeholder {
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:0.5rem;
+      height: 160px;
+      background: rgba(88,69,133,0.15);
+      color: var(--lavender); font-style:italic; font-size:0.9rem;
+      border-top: 1px solid rgba(122,56,112,0.4);
+      text-align:center; padding: 1rem;
+    }
+    .yt-placeholder span { font-size:2rem; }
+
+    .music-actions {
+      display:flex; gap:0.5rem; padding: 0.8rem 1.2rem 1rem; justify-content:flex-end;
+    }
+
+    /* ADD BUTTON */
+    .add-music-btn {
+      display:flex; align-items:center; gap:0.6rem;
+      padding:0.75rem 1.6rem; border-radius:8px;
+      background: rgba(132,159,118,0.15);
+      border: 2px dashed var(--sage);
+      color: var(--sage);
+      font-family:'Cinzel Decorative',serif; font-size:0.75rem; letter-spacing:0.08em;
+      cursor:pointer; transition:background 0.2s, border-color 0.2s, color 0.2s;
+      margin-top: 1rem;
+    }
+    .add-music-btn:hover { background:rgba(132,159,118,0.25); border-color:var(--sand); color:var(--sand); }
+
+    /* MODAL */
+    .modal-overlay {
+      display:none; position:fixed; inset:0; z-index:200;
+      background:rgba(10,4,8,0.82); backdrop-filter:blur(4px);
+      align-items:center; justify-content:center;
+    }
+    .modal-overlay.open { display:flex; }
+    .modal {
+      background: linear-gradient(145deg, #0e1f2a, #12122e);
+      border: 1px solid var(--indigo);
+      border-radius:14px; padding:2rem 2.2rem;
+      width: min(540px, 92vw);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .modal h2 {
+      font-family:'Cinzel Decorative',serif; font-size:1rem;
+      color:var(--sand); margin-bottom:1.4rem; letter-spacing:0.08em;
+    }
+    .modal label { display:block; font-size:0.85rem; color:var(--slate); margin-bottom:0.3rem; }
+    .modal input, .modal textarea {
+      width:100%; background:rgba(117,143,168,0.08);
+      border:1px solid var(--indigo); border-radius:6px;
+      color:var(--sand); font-family:'Crimson Pro',serif; font-size:1rem;
+      padding:0.55rem 0.8rem; margin-bottom:1rem; outline:none;
+      transition:border-color 0.2s;
+    }
+    .modal input:focus, .modal textarea:focus { border-color:var(--sage); }
+    .modal textarea { resize:vertical; min-height:70px; }
+    .modal-btns { display:flex; gap:0.8rem; justify-content:flex-end; margin-top:0.5rem; }
+    .btn {
+      padding:0.5rem 1.4rem; border-radius:6px; border:none; cursor:pointer;
+      font-family:'Cinzel Decorative',serif; font-size:0.72rem; letter-spacing:0.08em;
+      transition:opacity 0.2s;
+    }
+    .btn:hover { opacity:0.85; }
+    .btn-primary { background:var(--sage); color:#1a0a12; }
+    .btn-ghost { background:transparent; color:var(--lavender); border:1px solid var(--plum); }
+
+    footer {
+      position:relative; z-index:1; text-align:center;
+      padding:2rem; font-size:0.8rem; color:var(--plum);
+      border-top:1px solid rgba(122,56,112,0.3); margin-top:3rem;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">✦ My Portfolio</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="artwork.html">Artwork</a></li>
+    <li><a href="music.html" class="active">Music</a></li>
+    <li><a href="animations.html">Animations</a></li>
+  </ul>
+</nav>
+
+<main class="page">
+  <h1 class="page-title">Music</h1>
+  <p class="page-sub">Songs &amp; soundscapes tied to the artwork</p>
+
+  <div class="instructions">
+    <strong>How to add music:</strong> Click <em>"+ Add Song"</em> and paste in a YouTube URL
+    (e.g. <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code> or the short
+    <code>https://youtu.be/dQw4w9WgXcQ</code> form). You can also note which artwork piece it relates to.
+    Everything saves automatically in your browser.
+  </div>
+
+  <div class="music-list" id="music-list">
+    <!-- dynamic cards go here -->
+  </div>
+
+  <button class="add-music-btn" id="add-btn">
+    <span style="font-size:1.2rem">♪</span> Add Song
+  </button>
+</main>
+
+<footer><p>✦ All content belongs to me ✦</p></footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2 id="modal-title">Add Song</h2>
+    <label>YouTube URL</label>
+    <input type="url" id="m-url" placeholder="https://www.youtube.com/watch?v=..." />
+    <label>Song / Track Title</label>
+    <input type="text" id="m-title" placeholder="Song name or artist – title" />
+    <label>Related Artwork (optional)</label>
+    <input type="text" id="m-art" placeholder="e.g. Untitled No. 1" />
+    <label>Notes / Description</label>
+    <textarea id="m-desc" placeholder="Why does this song connect to the artwork? Mood, story…"></textarea>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
+      <button class="btn btn-primary" id="modal-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORE_KEY = 'portfolio_music';
+function load() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch { return []; } }
+function save(d) { localStorage.setItem(STORE_KEY, JSON.stringify(d)); }
+
+let songs = load();
+let editingId = null;
+
+const list   = document.getElementById('music-list');
+const addBtn = document.getElementById('add-btn');
+const modal  = document.getElementById('modal');
+const mModalTitle = document.getElementById('modal-title');
+const mUrl   = document.getElementById('m-url');
+const mTitle = document.getElementById('m-title');
+const mArt   = document.getElementById('m-art');
+const mDesc  = document.getElementById('m-desc');
+
+function ytEmbedUrl(raw) {
+  if (!raw) return null;
+  // Handle youtu.be short links
+  let m = raw.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
+  if (m) return `https://www.youtube.com/embed/${m[1]}`;
+  // Handle watch?v=
+  m = raw.match(/[?&]v=([A-Za-z0-9_-]{11})/);
+  if (m) return `https://www.youtube.com/embed/${m[1]}`;
+  // Handle /embed/ already
+  if (raw.includes('/embed/')) return raw;
+  return null;
+}
+
+function renderCard(s) {
+  const card = document.createElement('div');
+  card.className = 'music-card';
+  card.dataset.id = s.id;
+
+  const embedUrl = ytEmbedUrl(s.url);
+  const embedHtml = embedUrl
+    ? `<div class="yt-wrap"><iframe src="${embedUrl}" allowfullscreen loading="lazy" title="${s.title || 'Music'}"></iframe></div>`
+    : `<div class="yt-placeholder"><span>🎵</span><p>No valid YouTube URL set — click Edit to add one</p></div>`;
+
+  card.innerHTML = `
+    <div class="music-header">
+      <div class="music-meta">
+        <div class="music-title">${s.title || 'Untitled Track'}</div>
+        ${s.artwork ? `<div class="music-artwork-ref">🎨 Related to: ${s.artwork}</div>` : ''}
+      </div>
+    </div>
+    ${s.desc ? `<div class="music-desc">${s.desc}</div>` : ''}
+    ${embedHtml}
+    <div class="music-actions">
+      <button class="btn btn-ghost" style="font-size:0.65rem;padding:0.3rem 0.8rem"
+        onclick="openEdit('${s.id}')">✏️ Edit</button>
+      <button class="btn btn-ghost" style="font-size:0.65rem;padding:0.3rem 0.8rem;color:#c06;"
+        onclick="deleteSong('${s.id}')">🗑 Remove</button>
+    </div>`;
+  return card;
+}
+
+function renderAll() {
+  list.innerHTML = '';
+  if (songs.length === 0) {
+    list.innerHTML = `<p style="color:var(--lavender);font-style:italic;padding:1rem 0;">No songs yet — add one below!</p>`;
+  }
+  songs.forEach(s => list.appendChild(renderCard(s)));
+}
+
+function openAdd() {
+  editingId = null;
+  mModalTitle.textContent = 'Add Song';
+  mUrl.value = mTitle.value = mArt.value = mDesc.value = '';
+  modal.classList.add('open');
+}
+
+function openEdit(id) {
+  editingId = id;
+  const s = songs.find(x => x.id === id);
+  if (!s) return;
+  mModalTitle.textContent = 'Edit Song';
+  mUrl.value   = s.url     || '';
+  mTitle.value = s.title   || '';
+  mArt.value   = s.artwork || '';
+  mDesc.value  = s.desc    || '';
+  modal.classList.add('open');
+}
+window.openEdit = openEdit;
+
+function deleteSong(id) {
+  if (!confirm('Remove this song?')) return;
+  songs = songs.filter(s => s.id !== id);
+  save(songs); renderAll();
+}
+window.deleteSong = deleteSong;
+
+document.getElementById('modal-cancel').onclick = () => modal.classList.remove('open');
+document.getElementById('modal-save').onclick = () => {
+  if (editingId) {
+    const s = songs.find(x => x.id === editingId);
+    if (s) { s.url = mUrl.value; s.title = mTitle.value; s.artwork = mArt.value; s.desc = mDesc.value; }
+  } else {
+    songs.push({ id: Date.now().toString(), url: mUrl.value, title: mTitle.value, artwork: mArt.value, desc: mDesc.value });
+  }
+  save(songs); renderAll(); modal.classList.remove('open');
+};
+
+addBtn.onclick = openAdd;
+modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+renderAll();
+</script>
+</body>
+</html>
