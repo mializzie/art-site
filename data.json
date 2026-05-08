@@ -3,21 +3,33 @@
     "title": "My Creative Portfolio",
     "subtitle": "Art · Music · Animation"
   },
-
-  "artwork": [
-    {
-      "id": "art-1",
-      "image": "images/artwork/piece1.jpg",
-      "title": "Untitled No. 1",
-      "description": "Add your description here — medium, inspiration, year, or anything you'd like visitors to know."
-    },
-    {
-      "id": "art-2",
-      "image": "images/artwork/piece2.jpg",
-      "title": "Untitled No. 2",
-      "description": "Replace this with your own description."
-    }
-  ],
+  
+"artwork": [
+  {
+    "id": "art-1",
+    "image": "images/artwork/art-1.jpg",
+    "title": "Untitled No. 1",
+    "description": "..."
+  },
+  {
+    "id": "art-2",
+    "image": "images/artwork/art-2.jpg",
+    "title": "Untitled No. 2",
+    "description": "..."
+  },
+  {
+    "id": "art-3",
+    "image": "images/artwork/art-3.jpg",
+    "title": "Untitled No. 3",
+    "description": "..."
+  },
+  {
+    "id": "art-4",
+    "image": "images/artwork/art-4.jpg",
+    "title": "Untitled No. 4",
+    "description": "..."
+  }
+]
 
   "music": [
     {
