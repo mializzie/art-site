@@ -9,44 +9,58 @@
       "id": "art-1",
       "image": "images/artwork/art-1.jpg",
       "title": "Untitled No. 1",
-      "description": "..."
+      "description": "Add your description here — medium, inspiration, year, or anything you'd like visitors to know."
     },
     {
       "id": "art-2",
       "image": "images/artwork/art-2.jpg",
       "title": "Untitled No. 2",
-      "description": "..."
+      "description": "Replace this with your own description."
     },
     {
       "id": "art-3",
       "image": "images/artwork/art-3.jpg",
       "title": "Untitled No. 3",
-      "description": "..."
+      "description": "Add description here."
     },
     {
       "id": "art-4",
       "image": "images/artwork/art-4.jpg",
       "title": "Untitled No. 4",
-      "description": "..."
+      "description": "Add description here."
     }
   ],
 
   "music": [
     {
       "id": "song-1",
-      "youtubeId": "dQw4w9WgXcQ",
-      "title": "Song Title – Artist Name",
+      "youtubeId": "1mHagQEL4-E",
+      "title": "Its Outside the Realm – Big Giant Circles",
       "relatedArtwork": "Untitled No. 1",
-      "description": "Notes about why this song connects to the artwork — mood, story, inspiration."
+      "description": "Energetic and atmospheric track influencing abstract visual themes."
+    },
+    {
+      "id": "song-2",
+      "youtubeId": "5mKX21of0sM",
+      "title": "What Once Was – Her's",
+      "relatedArtwork": "Untitled No. 2",
+      "description": "Dreamy, nostalgic sound connected to soft emotional visuals."
+    },
+    {
+      "id": "song-3",
+      "youtubeId": "67oBykAKUuk",
+      "title": "Entombed – Deftones",
+      "relatedArtwork": "Untitled No. 3",
+      "description": "Dark, immersive tone influencing moody and atmospheric artwork."
     }
   ],
 
   "animations": [
     {
-      "id": "gif-1",
+      "id": "anim-1",
       "image": "images/animations/anim1.gif",
       "title": "Untitled Animation",
-      "description": "Tools used, what this is, the story behind it."
+      "description": "Tools used, motion study, and creative process behind this piece."
     }
   ]
 }
