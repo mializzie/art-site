@@ -9,25 +9,25 @@
       "id": "art-1",
       "image": "images/artwork/art-1.jpg",
       "title": "James Jim Lake Jr",
-      "description": "A digital painting I did on a trollhunters character James Lake Jr. known as Jim,he's a resilient and complex character who puts his friends and family before his own needs"
+      "description": "A digital painting I did on a Trollhunters character, James Lake Jr. known as Jim. He's a resilient and complex character who puts his friends and family before his own needs."
     },
     {
       "id": "art-2",
       "image": "images/artwork/art-2.jpg",
-      "title": "Hanako's pop",
-      "description": "This is a digital lasso art piece I did on an anime TBHK the main character is intriguing and funny, Hanako is a really deep character despite his humor his past is very dark."
+      "title": "Hanako's Pop",
+      "description": "This is a digital lasso art piece I did on the anime TBHK. The main character is intriguing and funny. Hanako is a really deep character despite his humor; his past is very dark."
     },
     {
       "id": "art-3",
       "image": "images/artwork/art-3.jpg",
-      "title": "Mia's piece",
-      "description": "I decided to capture how I view myself through digital art, using the lasso art style I captured images of myself in a comic way as my self portraits."
+      "title": "Mia's Piece",
+      "description": "I decided to capture how I view myself through digital art. Using the lasso art style, I created comic-like self portraits."
     },
     {
       "id": "art-4",
       "image": "images/artwork/art-4.jpg",
       "title": "Nancy Wheeler",
-      "description": "From Stranger Things, I admire Nancy Wheeler a female character who shows great strength both physically and emotionally, she is my favorite character of all time, I captured her wielding her weapon of choice bravely, her guns."
+      "description": "From Stranger Things, I admire Nancy Wheeler, a female character who shows great strength both physically and emotionally. She is my favorite character of all time, and I captured her bravely wielding her weapon of choice."
     }
   ],
 
@@ -43,22 +43,22 @@
       "id": "song-2",
       "youtubeId": "5mKX21of0sM",
       "title": "What Once Was – Her's",
-      "relatedArtwork": "Hanako's pop",
+      "relatedArtwork": "Hanako's Pop",
       "description": "Dreamy, nostalgic sound connected to soft emotional visuals."
     },
     {
       "id": "song-3",
       "youtubeId": "67oBykAKUuk",
       "title": "Entombed – Deftones",
-      "relatedArtwork": "Mia's piece",
+      "relatedArtwork": "Mia's Piece",
       "description": "Dark, immersive tone influencing moody and atmospheric artwork."
-    }
+    },
     {
-      "id": "song-3",
+      "id": "song-4",
       "youtubeId": "da3bYroZNSE",
-      "title": "Tbhk op 'No 7' – Jibaku Shuonen Band",
-      "relatedArtwork": "Hanako's pop",
-      "description": "Pop Rock, capturing the vibe and character from the artwork."
+      "title": "TBHK OP 'No 7' – Jibaku Shounen Band",
+      "relatedArtwork": "Hanako's Pop",
+      "description": "Pop rock track capturing the vibe and character from the artwork."
     }
   ],
 
