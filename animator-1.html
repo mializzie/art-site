@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIGMENT ANIMATE — Flipbook Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0f0e0d;
+    --paper: #f5f0e8;
+    --accent: #c8432a;
+    --accent2: #2565e8;
+    --panel: #1a1917;
+    --panel-light: #252320;
+    --border: #333028;
+    --text-dim: #857f72;
+    --text-bright: #f0ebe0;
+    --green: #2da84e;
+    --amber: #f5b400;
+  }
+
+  body {
+    background: var(--ink);
+    color: var(--text-bright);
+    font-family: 'DM Mono', monospace;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 48px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    gap: 12px;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: var(--paper);
+    white-space: nowrap;
+  }
+  .logo span { color: var(--accent); }
+  .logo sub { font-size: 9px; color: var(--text-dim); letter-spacing: 0.15em; vertical-align: middle; margin-left: 4px; font-family: 'DM Mono', monospace; }
+
+  .header-center { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; }
+  .header-actions { display: flex; gap: 6px; }
+
+  .btn {
+    background: var(--panel-light);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--border); color: var(--text-bright); }
+  .btn.primary { background: var(--accent2); border-color: var(--accent2); color: white; }
+  .btn.primary:hover { filter: brightness(1.2); }
+  .btn.success { background: var(--green); border-color: var(--green); color: white; }
+  .btn.success:hover { filter: brightness(1.2); }
+  .btn.danger { color: #c8432a; border-color: #c8432a44; }
+  .btn.danger:hover { background: #c8432a22; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── WORKSPACE ── */
+  .workspace {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── LEFT SIDEBAR (tools) ── */
+  .sidebar {
+    width: 180px;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .section {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-label {
+    font-size: 8px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  /* PRESETS */
+  .preset-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+  .preset-swatch {
+    width: 100%; aspect-ratio: 1;
+    border-radius: 3px; cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.1s, border-color 0.15s;
+  }
+  .preset-swatch:hover { transform: scale(1.1); }
+  .preset-swatch.active { border-color: white; transform: scale(1.1); }
+
+  /* WHEEL */
+  .wheel-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  #colorWheel { width: 148px; height: 148px; border-radius: 50%; cursor: crosshair; border: 2px solid var(--border); flex-shrink: 0; }
+  .brightness-row { display: flex; align-items: center; gap: 6px; width: 100%; }
+  .brightness-row label { font-size: 8px; color: var(--text-dim); text-transform: uppercase; width: 14px; }
+  #brightnessSlider {
+    flex: 1; -webkit-appearance: none; height: 5px; border-radius: 3px;
+    background: linear-gradient(to right, #000, #fff); outline: none; cursor: pointer;
+  }
+  #brightnessSlider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%;
+    background: white; border: 2px solid #555; cursor: pointer;
+  }
+  .color-preview { width: 100%; height: 28px; border-radius: 3px; border: 1px solid var(--border); transition: background 0.15s; }
+  .hex-input-wrap {
+    display: flex; align-items: center; gap: 4px;
+    background: var(--panel-light); border: 1px solid var(--border);
+    border-radius: 3px; padding: 3px 6px; width: 100%;
+  }
+  .hex-label { color: var(--text-dim); font-size: 10px; }
+  #hexInput { background: none; border: none; color: var(--text-bright); font-family: 'DM Mono', monospace; font-size: 10px; width: 100%; outline: none; }
+  .wheel-container { position: relative; display: inline-block; }
+  #wheelCursor {
+    position: absolute; width: 9px; height: 9px; border-radius: 50%;
+    border: 2px solid white; box-shadow: 0 0 0 1px black;
+    transform: translate(-50%,-50%); pointer-events: none;
+  }
+
+  /* TOOLS */
+  .tool-row { display: flex; gap: 5px; margin-bottom: 7px; }
+  .tool-btn {
+    flex: 1; padding: 7px 4px;
+    background: var(--panel-light); border: 1px solid var(--border);
+    color: var(--text-dim); font-family: 'DM Mono', monospace; font-size: 9px;
+    letter-spacing: 0.04em; cursor: pointer; text-align: center;
+    transition: all 0.15s; text-transform: uppercase; border-radius: 3px;
+  }
+  .tool-btn:hover { color: var(--text-bright); border-color: #555; }
+  .tool-btn.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+  /* SLIDERS */
+  .slider-group { margin-bottom: 8px; }
+  .slider-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+  .slider-header span:first-child { font-size: 8px; letter-spacing: 0.15em; color: var(--text-dim); text-transform: uppercase; }
+  .slider-header span:last-child { font-size: 9px; color: var(--text-bright); }
+  input[type=range].styled {
+    -webkit-appearance: none; width: 100%; height: 3px; border-radius: 2px;
+    background: var(--border); outline: none; cursor: pointer;
+  }
+  input[type=range].styled::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--text-bright); border: 2px solid var(--panel-light); cursor: pointer;
+  }
+  .brush-preview-wrap {
+    display: flex; justify-content: center; align-items: center;
+    height: 44px; background: var(--panel-light); border: 1px solid var(--border);
+    border-radius: 3px; margin-top: 6px; overflow: hidden;
+  }
+  #brushPreview { border-radius: 50%; transition: width 0.1s, height 0.1s, background 0.15s; }
+
+  /* ── MAIN AREA ── */
+  .main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── CANVAS ZONE ── */
+  .canvas-zone {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 24px, #1f1c1a 24px, #1f1c1a 25px),
+      repeating-linear-gradient(90deg, transparent, transparent 24px, #1f1c1a 24px, #1f1c1a 25px);
+    background-color: #161412;
+    position: relative;
+  }
+
+  /* Ghost canvas overlays main canvas with pointer-events none */
+  #ghostCanvas {
+    position: absolute;
+    pointer-events: none;
+    display: none;
+    z-index: 3;
+  }
+
+  #mainCanvas {
+    display: block;
+    cursor: crosshair;
+    box-shadow: 0 0 0 1px #333028, 0 8px 60px rgba(0,0,0,0.8);
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    height: 110px;
+    background: var(--panel);
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .timeline-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .tl-label { font-size: 8px; letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase; }
+  .tl-sep { width: 1px; height: 16px; background: var(--border); margin: 0 4px; }
+  .fps-display { font-size: 10px; color: var(--text-bright); padding: 3px 8px; background: var(--panel-light); border: 1px solid var(--border); }
+  .frame-count-display { font-size: 10px; color: var(--text-dim); }
+  .frame-count-display span { color: var(--text-bright); }
+  .onion-toggle { display: flex; align-items: center; gap: 5px; font-size: 9px; color: var(--text-dim); cursor: pointer; }
+  .onion-toggle input { cursor: pointer; accent-color: var(--accent2); }
+
+  .frames-scroll {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    gap: 6px;
+  }
+  .frames-scroll::-webkit-scrollbar { height: 4px; }
+  .frames-scroll::-webkit-scrollbar-track { background: transparent; }
+  .frames-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .frame-thumb {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    background: white;
+    overflow: hidden;
+    transition: border-color 0.12s, transform 0.1s;
+  }
+  .frame-thumb:hover { border-color: #666; transform: translateY(-2px); }
+  .frame-thumb.active { border-color: var(--accent2); box-shadow: 0 0 0 1px var(--accent2); }
+  .frame-thumb canvas { width: 100%; height: 100%; display: block; }
+  .frame-num {
+    position: absolute; bottom: 2px; right: 4px;
+    font-size: 8px; color: rgba(0,0,0,0.5);
+    font-family: 'DM Mono', monospace;
+    pointer-events: none;
+  }
+  .frame-del {
+    position: absolute; top: 2px; right: 2px;
+    width: 14px; height: 14px; background: rgba(200,67,42,0.85);
+    border-radius: 50%; display: none; align-items: center; justify-content: center;
+    font-size: 8px; color: white; cursor: pointer; line-height: 1;
+  }
+  .frame-thumb:hover .frame-del { display: flex; }
+
+  /* ADD FRAME BTN */
+  .add-frame-btn {
+    flex-shrink: 0;
+    width: 64px; height: 64px;
+    border: 2px dashed var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px;
+    color: var(--text-dim);
+    transition: border-color 0.15s, color 0.15s;
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .add-frame-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+  .add-frame-btn .plus { font-size: 20px; line-height: 1; }
+
+  /* ── PLAYBACK MODAL ── */
+  .play-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    display: none; align-items: center; justify-content: center;
+    z-index: 1000; flex-direction: column; gap: 16px;
+  }
+  .play-overlay.active { display: flex; }
+  .play-modal {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.8);
+  }
+  .play-modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    color: var(--paper);
+  }
+  #playbackCanvas {
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.6);
+  }
+  .play-controls { display: flex; gap: 8px; align-items: center; }
+  .play-info { font-size: 9px; color: var(--text-dim); letter-spacing: 0.12em; }
+  .play-info span { color: var(--text-bright); }
+
+  /* STATUS BAR */
+  .statusbar {
+    height: 24px; background: var(--panel); border-top: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 14px; gap: 18px; flex-shrink: 0;
+  }
+  .status-item { font-size: 8px; letter-spacing: 0.12em; color: var(--text-dim); text-transform: uppercase; }
+  .status-item span { color: var(--text-bright); }
+
+  /* CURSOR */
+  #cursorCircle {
+    position: fixed; pointer-events: none; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.6); transform: translate(-50%,-50%);
+    z-index: 9999; mix-blend-mode: difference; display: none;
+  }
+
+  /* FPS slider */
+  #fpsSlider { width: 70px; }
+</style>
+</head>
+<body>
+
+<div id="cursorCircle"></div>
+
+<!-- PLAYBACK OVERLAY -->
+<div class="play-overlay" id="playOverlay">
+  <div class="play-modal">
+    <div class="play-modal-title">PIGMENT<span style="color:var(--accent)">·</span>ANIMATE</div>
+    <canvas id="playbackCanvas"></canvas>
+    <div class="play-controls">
+      <button class="btn" id="prevFrameBtn" onclick="stepFrame(-1)">◀ Prev</button>
+      <button class="btn success" id="playPauseBtn" onclick="togglePlay()">▶ Play</button>
+      <button class="btn" id="nextFrameBtn" onclick="stepFrame(1)">Next ▶</button>
+      <button class="btn danger" onclick="closePlayback()">✕ Close</button>
+    </div>
+    <div class="play-info">Frame <span id="playFrameInfo">1</span> / <span id="playFrameTotal">1</span> &nbsp;·&nbsp; <span id="playFpsInfo">6</span> fps</div>
+  </div>
+</div>
+
+<header>
+  <div class="logo">PIG<span>·</span>MENT<sub>ANIMATE</sub></div>
+  <div class="header-center">
+    <button class="btn" onclick="duplicateFrame()" title="Duplicate current frame">⧉ Dupe</button>
+    <button class="btn" onclick="clearFrame()" title="Clear current frame">✕ Clear</button>
+    <div class="tl-sep"></div>
+    <button class="btn success" onclick="openPlayback()">▶ Play Animation</button>
+    <button class="btn primary" onclick="exportGif()">↓ Export GIF</button>
+  </div>
+  <div class="header-actions">
+    <span style="font-size:9px;color:var(--text-dim);letter-spacing:0.1em;text-transform:uppercase;">FPS</span>
+    <input type="range" id="fpsSlider" class="styled" min="1" max="24" value="6" style="width:60px;">
+    <span class="fps-display" id="fpsDisplay">6</span>
+  </div>
+</header>
+
+<div class="workspace">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="section">
+      <div class="section-label">Palette</div>
+      <div class="preset-grid" id="presetGrid"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Colour Wheel</div>
+      <div class="wheel-wrap">
+        <div class="wheel-container">
+          <canvas id="colorWheel" width="148" height="148"></canvas>
+          <div id="wheelCursor"></div>
+        </div>
+        <div class="brightness-row">
+          <label>L</label>
+          <input type="range" id="brightnessSlider" min="0" max="100" value="100">
+        </div>
+        <div class="hex-input-wrap">
+          <span class="hex-label">#</span>
+          <input id="hexInput" type="text" maxlength="6" value="e8302a" spellcheck="false">
+        </div>
+        <div class="color-preview" id="colorPreview"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Tool</div>
+      <div class="tool-row">
+        <button class="tool-btn active" id="brushBtn" onclick="setTool('brush')">✏ Brush</button>
+        <button class="tool-btn" id="eraserBtn" onclick="setTool('eraser')">◻ Erase</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Brush</div>
+      <div class="slider-group">
+        <div class="slider-header"><span>Size</span><span id="sizeVal">14px</span></div>
+        <input type="range" class="styled" id="sizeSlider" min="1" max="100" value="14">
+      </div>
+      <div class="slider-group">
+        <div class="slider-header"><span>Opacity</span><span id="opacityVal">90%</span></div>
+        <input type="range" class="styled" id="opacitySlider" min="1" max="100" value="90">
+      </div>
+      <div class="slider-group">
+        <div class="slider-header"><span>Hardness</span><span id="hardnessVal">80%</span></div>
+        <input type="range" class="styled" id="hardnessSlider" min="0" max="100" value="80">
+      </div>
+      <div class="brush-preview-wrap">
+        <div id="brushPreview"></div>
+      </div>
+    </div>
+
+    <!-- ONION SKIN -->
+    <div class="section">
+      <div class="section-label">Onion Skin</div>
+      <label class="onion-toggle">
+        <input type="checkbox" id="onionToggle" checked>
+        Show ghost frame
+      </label>
+      <div style="margin-top:8px;" class="slider-group">
+        <div class="slider-header"><span>Opacity</span><span id="onionVal">25%</span></div>
+        <input type="range" class="styled" id="onionOpacity" min="5" max="60" value="25">
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN AREA -->
+  <div class="main-area">
+
+    <div class="canvas-zone" id="canvasZone">
+      <canvas id="ghostCanvas"></canvas>
+      <canvas id="mainCanvas"></canvas>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="timeline">
+      <div class="timeline-toolbar">
+        <span class="tl-label">Timeline</span>
+        <div class="tl-sep"></div>
+        <div class="frame-count-display">Frame <span id="tlCurrent">1</span> / <span id="tlTotal">1</span></div>
+        <div class="tl-sep"></div>
+        <label class="onion-toggle" style="margin-left:auto;">
+          <input type="checkbox" id="onionToggle2" checked>
+          <span style="font-size:9px;color:var(--text-dim)">Onion skin</span>
+        </label>
+      </div>
+      <div class="frames-scroll" id="framesScroll">
+        <!-- thumbnails injected here -->
+        <div class="add-frame-btn" id="addFrameBtn" onclick="addFrame()">
+          <span class="plus">+</span>
+          <span>Frame</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="statusbar">
+  <div class="status-item">X: <span id="statX">—</span></div>
+  <div class="status-item">Y: <span id="statY">—</span></div>
+  <div class="status-item">Tool: <span id="statTool">Brush</span></div>
+  <div class="status-item">Frame: <span id="statFrame">1</span></div>
+  <div class="status-item">Size: <span id="statSize">14</span>px</div>
+</div>
+
+<!-- gif.js for GIF export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let currentColor = '#e8302a';
+let currentTool = 'brush';
+let brushSize = 14;
+let opacity = 0.9;
+let hardness = 0.8;
+let currentFrameIdx = 0;
+let frames = [];           // array of ImageData objects
+let fps = 6;
+let onionEnabled = true;
+let onionOpacityVal = 0.25;
+let playInterval = null;
+let playFrameIdx = 0;
+let isPlaying = false;
+
+const CANVAS_W = () => mainCanvas.width;
+const CANVAS_H = () => mainCanvas.height;
+
+// ═══════════════════════════════════════════
+// CANVAS SETUP
+// ═══════════════════════════════════════════
+const mainCanvas = document.getElementById('mainCanvas');
+const ctx = mainCanvas.getContext('2d');
+const ghostCanvas = document.getElementById('ghostCanvas');
+const ghostCtx = ghostCanvas.getContext('2d');
+
+function resizeCanvas() {
+  const zone = document.getElementById('canvasZone');
+  const w = zone.clientWidth - 8;
+  const h = zone.clientHeight - 8;
+
+  // Save current frame before resize
+  if (frames.length > 0 && mainCanvas.width > 0) {
+    frames[currentFrameIdx] = ctx.getImageData(0, 0, mainCanvas.width, mainCanvas.height);
+  }
+
+  mainCanvas.width = w; mainCanvas.height = h;
+  ghostCanvas.width = w; ghostCanvas.height = h;
+
+  // Restore
+  fillWhite(ctx, w, h);
+  if (frames[currentFrameIdx]) {
+    ctx.putImageData(frames[currentFrameIdx], 0, 0);
+  }
+  renderOnion();
+}
+
+function fillWhite(context, w, h) {
+  context.fillStyle = '#ffffff';
+  context.fillRect(0, 0, w, h);
+}
+
+// Initial frame
+function initFirstFrame() {
+  const zone = document.getElementById('canvasZone');
+  const w = zone.clientWidth - 8;
+  const h = zone.clientHeight - 8;
+  mainCanvas.width = w; mainCanvas.height = h;
+  ghostCanvas.width = w; ghostCanvas.height = h;
+  fillWhite(ctx, w, h);
+  frames.push(ctx.getImageData(0, 0, w, h));
+  renderTimeline();
+  // Position ghost after browser layout
+  requestAnimationFrame(() => { positionGhostCanvas(); renderOnion(); });
+}
+
+window.addEventListener('resize', () => {
+  saveCurrentFrame();
+  resizeCanvas();
+  renderTimeline();
+  requestAnimationFrame(() => positionGhostCanvas());
+});
+
+// ═══════════════════════════════════════════
+// PRESETS
+// ═══════════════════════════════════════════
+const PRESETS = [
+  '#e8302a','#c0162a','#f47c20','#f5b400',
+  '#f5e642','#a2d826','#2da84e','#1bb8a0',
+  '#2565e8','#4643df','#8b3cf7','#d42dad',
+  '#ffffff','#aaaaaa','#444444','#111111',
+];
+const presetGrid = document.getElementById('presetGrid');
+PRESETS.forEach(hex => {
+  const el = document.createElement('div');
+  el.className = 'preset-swatch' + (hex === currentColor ? ' active' : '');
+  el.style.background = hex;
+  el.addEventListener('click', () => {
+    currentColor = hex;
+    syncColorFromHex(hex);
+    document.querySelectorAll('.preset-swatch').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+  });
+  presetGrid.appendChild(el);
+});
+
+// ═══════════════════════════════════════════
+// COLOUR WHEEL
+// ═══════════════════════════════════════════
+const wheelCanvas = document.getElementById('colorWheel');
+const wheelCtx = wheelCanvas.getContext('2d');
+const wheelCursor = document.getElementById('wheelCursor');
+let brightness = 1.0;
+
+function drawWheel() {
+  const cx = wheelCanvas.width / 2, cy = wheelCanvas.height / 2;
+  const radius = cx - 2;
+  wheelCtx.clearRect(0, 0, wheelCanvas.width, wheelCanvas.height);
+  for (let angle = 0; angle < 360; angle += 0.5) {
+    const sa = (angle - 0.5) * Math.PI / 180;
+    const ea = (angle + 1) * Math.PI / 180;
+    const grad = wheelCtx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+    grad.addColorStop(0, `hsla(${angle},0%,${brightness*100}%,1)`);
+    grad.addColorStop(1, `hsla(${angle},100%,${brightness*50}%,1)`);
+    wheelCtx.beginPath();
+    wheelCtx.moveTo(cx, cy);
+    wheelCtx.arc(cx, cy, radius, sa, ea);
+    wheelCtx.closePath();
+    wheelCtx.fillStyle = grad;
+    wheelCtx.fill();
+  }
+}
+drawWheel();
+
+function pickFromWheel(e) {
+  const rect = wheelCanvas.getBoundingClientRect();
+  const x = e.clientX - rect.left, y = e.clientY - rect.top;
+  const px = Math.floor(x * wheelCanvas.width / rect.width);
+  const py = Math.floor(y * wheelCanvas.height / rect.height);
+  const data = wheelCtx.getImageData(px, py, 1, 1).data;
+  if (data[3] < 10) return;
+  currentColor = rgbToHex(data[0], data[1], data[2]);
+  document.getElementById('hexInput').value = currentColor.replace('#','');
+  updatePreview(); updateBrushPreview();
+  wheelCursor.style.left = (x / rect.width * 148) + 'px';
+  wheelCursor.style.top = (y / rect.height * 148) + 'px';
+}
+let wheelDragging = false;
+wheelCanvas.addEventListener('mousedown', e => { wheelDragging = true; pickFromWheel(e); });
+window.addEventListener('mousemove', e => { if (wheelDragging) pickFromWheel(e); });
+window.addEventListener('mouseup', () => { wheelDragging = false; });
+document.getElementById('brightnessSlider').addEventListener('input', function() {
+  brightness = this.value / 100; drawWheel();
+});
+function rgbToHex(r,g,b) { return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join(''); }
+document.getElementById('hexInput').addEventListener('input', function() {
+  const val = this.value.trim();
+  if (/^[0-9a-fA-F]{6}$/.test(val)) { currentColor = '#'+val; updatePreview(); updateBrushPreview(); }
+});
+function syncColorFromHex(hex) {
+  document.getElementById('hexInput').value = hex.replace('#','');
+  updatePreview(); updateBrushPreview();
+}
+function updatePreview() { document.getElementById('colorPreview').style.background = currentColor; }
+updatePreview();
+
+// ═══════════════════════════════════════════
+// TOOL / BRUSH
+// ═══════════════════════════════════════════
+function setTool(tool) {
+  currentTool = tool;
+  document.getElementById('brushBtn').classList.toggle('active', tool==='brush');
+  document.getElementById('eraserBtn').classList.toggle('active', tool==='eraser');
+  document.getElementById('statTool').textContent = tool.charAt(0).toUpperCase()+tool.slice(1);
+  mainCanvas.style.cursor = tool==='eraser' ? 'cell' : 'crosshair';
+}
+document.getElementById('sizeSlider').addEventListener('input', function() {
+  brushSize = +this.value;
+  document.getElementById('sizeVal').textContent = brushSize+'px';
+  document.getElementById('statSize').textContent = brushSize;
+  updateBrushPreview();
+});
+document.getElementById('opacitySlider').addEventListener('input', function() {
+  opacity = this.value/100;
+  document.getElementById('opacityVal').textContent = this.value+'%';
+  updateBrushPreview();
+});
+document.getElementById('hardnessSlider').addEventListener('input', function() {
+  hardness = this.value/100;
+  document.getElementById('hardnessVal').textContent = this.value+'%';
+  updateBrushPreview();
+});
+function updateBrushPreview() {
+  const el = document.getElementById('brushPreview');
+  const d = Math.min(brushSize, 40);
+  el.style.width = d+'px'; el.style.height = d+'px';
+  el.style.opacity = opacity;
+  el.style.background = currentTool==='eraser' ? '#888' : currentColor;
+  const blur = (1-hardness)*(d/2);
+  el.style.filter = `blur(${blur}px)`;
+}
+updateBrushPreview();
+
+// FPS
+document.getElementById('fpsSlider').addEventListener('input', function() {
+  fps = +this.value;
+  document.getElementById('fpsDisplay').textContent = fps;
+});
+
+// ONION toggles
+function syncOnion() {
+  renderOnion();
+}
+document.getElementById('onionToggle').addEventListener('change', function() {
+  onionEnabled = this.checked;
+  document.getElementById('onionToggle2').checked = this.checked;
+  syncOnion();
+});
+document.getElementById('onionToggle2').addEventListener('change', function() {
+  onionEnabled = this.checked;
+  document.getElementById('onionToggle').checked = this.checked;
+  syncOnion();
+});
+document.getElementById('onionOpacity').addEventListener('input', function() {
+  onionOpacityVal = this.value/100;
+  document.getElementById('onionVal').textContent = this.value+'%';
+  syncOnion();
+});
+
+// ═══════════════════════════════════════════
+// ONION SKIN
+// ═══════════════════════════════════════════
+function positionGhostCanvas() {
+  // Align ghost exactly over mainCanvas
+  const mr = mainCanvas.getBoundingClientRect();
+  const zr = document.getElementById('canvasZone').getBoundingClientRect();
+  ghostCanvas.style.left = (mr.left - zr.left) + 'px';
+  ghostCanvas.style.top  = (mr.top  - zr.top)  + 'px';
+  ghostCanvas.style.width  = mr.width  + 'px';
+  ghostCanvas.style.height = mr.height + 'px';
+}
+
+function renderOnion() {
+  ghostCtx.clearRect(0, 0, ghostCanvas.width, ghostCanvas.height);
+
+  if (!onionEnabled) { ghostCanvas.style.display = 'none'; return; }
+
+  const prevIdx = currentFrameIdx - 1;
+  if (prevIdx < 0 || !frames[prevIdx]) { ghostCanvas.style.display = 'none'; return; }
+
+  positionGhostCanvas();
+  ghostCanvas.style.display = 'block';
+
+  const prev = frames[prevIdx];
+
+  // Build a tinted RGBA version of the previous frame:
+  // white pixels → fully transparent, coloured pixels → blue-tinted at onionOpacityVal
+  const src = prev.data;
+  const out = ghostCtx.createImageData(ghostCanvas.width, ghostCanvas.height);
+  const dst = out.data;
+
+  for (let i = 0; i < src.length; i += 4) {
+    const r = src[i], g = src[i+1], b = src[i+2], a = src[i+3];
+    // Measure how far from white (255,255,255)
+    const diff = (Math.abs(r - 255) + Math.abs(g - 255) + Math.abs(b - 255)) / 3;
+    if (diff < 8) {
+      // Near-white: fully transparent
+      dst[i] = dst[i+1] = dst[i+2] = dst[i+3] = 0;
+    } else {
+      // Tint toward blue
+      dst[i]   = Math.round(r * 0.3 + 80 * 0.7);   // R
+      dst[i+1] = Math.round(g * 0.3 + 140 * 0.7);  // G
+      dst[i+2] = Math.round(b * 0.3 + 255 * 0.7);  // B
+      dst[i+3] = Math.round(a * onionOpacityVal);   // A
+    }
+  }
+  ghostCtx.putImageData(out, 0, 0);
+}
+
+// ═══════════════════════════════════════════
+// DRAWING
+// ═══════════════════════════════════════════
+let painting = false;
+let lastX = 0, lastY = 0;
+
+function hexToRgb(hex) {
+  return { r: parseInt(hex.slice(1,3),16), g: parseInt(hex.slice(3,5),16), b: parseInt(hex.slice(5,7),16) };
+}
+
+function getCanvasPos(e) {
+  const rect = mainCanvas.getBoundingClientRect();
+  return {
+    x: (e.clientX - rect.left) * (mainCanvas.width / rect.width),
+    y: (e.clientY - rect.top) * (mainCanvas.height / rect.height)
+  };
+}
+
+function drawDot(x, y) {
+  const rad = brushSize / 2;
+  ctx.save();
+  ctx.globalAlpha = opacity;
+  if (currentTool === 'eraser') {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(0,0,0,1)';
+    ctx.beginPath();
+    ctx.arc(x, y, rad, 0, Math.PI*2);
+    ctx.fill();
+  } else {
+    ctx.globalCompositeOperation = 'source-over';
+    const rgb = hexToRgb(currentColor);
+    if (hardness < 1.0) {
+      const grad = ctx.createRadialGradient(x, y, 0, x, y, rad);
+      grad.addColorStop(0, `rgba(${rgb.r},${rgb.g},${rgb.b},1)`);
+      grad.addColorStop(Math.max(0,hardness), `rgba(${rgb.r},${rgb.g},${rgb.b},1)`);
+      grad.addColorStop(1, `rgba(${rgb.r},${rgb.g},${rgb.b},0)`);
+      ctx.fillStyle = grad;
+    } else {
+      ctx.fillStyle = currentColor;
+    }
+    ctx.beginPath();
+    ctx.arc(x, y, rad + (1-hardness)*rad*0.5, 0, Math.PI*2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawLine(x1, y1, x2, y2) {
+  const dist = Math.hypot(x2-x1, y2-y1);
+  const steps = Math.max(1, Math.ceil(dist / (brushSize * 0.15)));
+  for (let i = 0; i <= steps; i++) {
+    const t = i/steps;
+    drawDot(x1+(x2-x1)*t, y1+(y2-y1)*t);
+  }
+}
+
+mainCanvas.addEventListener('mousedown', e => {
+  painting = true;
+  const pos = getCanvasPos(e);
+  lastX = pos.x; lastY = pos.y;
+  drawDot(pos.x, pos.y);
+});
+mainCanvas.addEventListener('mousemove', e => {
+  const pos = getCanvasPos(e);
+  document.getElementById('statX').textContent = Math.round(pos.x);
+  document.getElementById('statY').textContent = Math.round(pos.y);
+  const curEl = document.getElementById('cursorCircle');
+  curEl.style.display = 'block';
+  curEl.style.left = e.clientX+'px'; curEl.style.top = e.clientY+'px';
+  const d = Math.max(brushSize, 4);
+  curEl.style.width = d+'px'; curEl.style.height = d+'px';
+  if (painting) {
+    drawLine(lastX, lastY, pos.x, pos.y);
+    lastX = pos.x; lastY = pos.y;
+  }
+});
+window.addEventListener('mouseup', () => {
+  if (painting) { saveCurrentFrame(); painting = false; }
+});
+mainCanvas.addEventListener('mouseleave', () => {
+  document.getElementById('cursorCircle').style.display = 'none';
+  document.getElementById('statX').textContent = '—';
+  document.getElementById('statY').textContent = '—';
+});
+mainCanvas.addEventListener('touchstart', e => {
+  e.preventDefault(); painting = true;
+  const pos = getCanvasPos(e.touches[0]);
+  lastX = pos.x; lastY = pos.y; drawDot(pos.x, pos.y);
+}, { passive: false });
+mainCanvas.addEventListener('touchmove', e => {
+  e.preventDefault(); if (!painting) return;
+  const pos = getCanvasPos(e.touches[0]);
+  drawLine(lastX, lastY, pos.x, pos.y);
+  lastX = pos.x; lastY = pos.y;
+}, { passive: false });
+mainCanvas.addEventListener('touchend', () => { if (painting) { saveCurrentFrame(); painting = false; } });
+
+// ═══════════════════════════════════════════
+// FRAME MANAGEMENT
+// ═══════════════════════════════════════════
+function saveCurrentFrame() {
+  frames[currentFrameIdx] = ctx.getImageData(0, 0, mainCanvas.width, mainCanvas.height);
+  updateThumb(currentFrameIdx);
+}
+
+function switchToFrame(idx) {
+  saveCurrentFrame();
+  currentFrameIdx = idx;
+  fillWhite(ctx, mainCanvas.width, mainCanvas.height);
+  if (frames[currentFrameIdx]) ctx.putImageData(frames[currentFrameIdx], 0, 0);
+  document.getElementById('statFrame').textContent = idx + 1;
+  document.getElementById('tlCurrent').textContent = idx + 1;
+  renderOnion();
+  // update active highlight
+  document.querySelectorAll('.frame-thumb').forEach((el, i) => el.classList.toggle('active', i === idx));
+}
+
+function addFrame() {
+  saveCurrentFrame();
+  const w = mainCanvas.width, h = mainCanvas.height;
+  const blank = document.createElement('canvas');
+  blank.width = w; blank.height = h;
+  const bCtx = blank.getContext('2d');
+  bCtx.fillStyle = '#ffffff';
+  bCtx.fillRect(0, 0, w, h);
+  frames.push(bCtx.getImageData(0, 0, w, h));
+  switchToFrame(frames.length - 1);
+  renderTimeline();
+  // scroll timeline to end
+  const scroll = document.getElementById('framesScroll');
+  scroll.scrollLeft = scroll.scrollWidth;
+}
+
+function duplicateFrame() {
+  saveCurrentFrame();
+  const src = frames[currentFrameIdx];
+  const copy = new ImageData(new Uint8ClampedArray(src.data), src.width, src.height);
+  frames.splice(currentFrameIdx + 1, 0, copy);
+  switchToFrame(currentFrameIdx + 1);
+  renderTimeline();
+}
+
+function deleteFrame(idx) {
+  if (frames.length <= 1) { clearFrame(); return; }
+  frames.splice(idx, 1);
+  const newIdx = Math.min(idx, frames.length - 1);
+  currentFrameIdx = newIdx;
+  fillWhite(ctx, mainCanvas.width, mainCanvas.height);
+  ctx.putImageData(frames[currentFrameIdx], 0, 0);
+  document.getElementById('statFrame').textContent = currentFrameIdx + 1;
+  document.getElementById('tlCurrent').textContent = currentFrameIdx + 1;
+  renderOnion();
+  renderTimeline();
+}
+
+function clearFrame() {
+  fillWhite(ctx, mainCanvas.width, mainCanvas.height);
+  saveCurrentFrame();
+}
+
+function renderTimeline() {
+  const scroll = document.getElementById('framesScroll');
+  const addBtn = document.getElementById('addFrameBtn');
+  // Remove all thumbs
+  document.querySelectorAll('.frame-thumb').forEach(el => el.remove());
+  // Insert new thumbs before the add button
+  frames.forEach((imgData, i) => {
+    const thumb = document.createElement('div');
+    thumb.className = 'frame-thumb' + (i === currentFrameIdx ? ' active' : '');
+    thumb.dataset.idx = i;
+
+    const tc = document.createElement('canvas');
+    tc.width = imgData.width; tc.height = imgData.height;
+    tc.getContext('2d').putImageData(imgData, 0, 0);
+    thumb.appendChild(tc);
+
+    const num = document.createElement('div');
+    num.className = 'frame-num';
+    num.textContent = i + 1;
+    thumb.appendChild(num);
+
+    const del = document.createElement('div');
+    del.className = 'frame-del';
+    del.textContent = '✕';
+    del.addEventListener('click', e => { e.stopPropagation(); deleteFrame(i); });
+    thumb.appendChild(del);
+
+    thumb.addEventListener('click', () => switchToFrame(i));
+    scroll.insertBefore(thumb, addBtn);
+  });
+  document.getElementById('tlTotal').textContent = frames.length;
+}
+
+function updateThumb(idx) {
+  const thumbs = document.querySelectorAll('.frame-thumb');
+  if (!thumbs[idx]) return;
+  const tc = thumbs[idx].querySelector('canvas');
+  if (tc && frames[idx]) {
+    tc.width = frames[idx].width; tc.height = frames[idx].height;
+    tc.getContext('2d').putImageData(frames[idx], 0, 0);
+  }
+}
+
+// ═══════════════════════════════════════════
+// PLAYBACK
+// ═══════════════════════════════════════════
+const playbackCanvas = document.getElementById('playbackCanvas');
+const pbCtx = playbackCanvas.getContext('2d');
+
+function openPlayback() {
+  saveCurrentFrame();
+  const maxW = Math.min(window.innerWidth - 80, 900);
+  const maxH = Math.min(window.innerHeight - 180, 600);
+  const scaleW = maxW / mainCanvas.width;
+  const scaleH = maxH / mainCanvas.height;
+  const scale = Math.min(scaleW, scaleH, 1);
+  playbackCanvas.width = Math.round(mainCanvas.width * scale);
+  playbackCanvas.height = Math.round(mainCanvas.height * scale);
+  playFrameIdx = 0;
+  document.getElementById('playFrameTotal').textContent = frames.length;
+  document.getElementById('playFpsInfo').textContent = fps;
+  renderPlayFrame();
+  document.getElementById('playOverlay').classList.add('active');
+  startPlay();
+}
+
+function closePlayback() {
+  stopPlay();
+  document.getElementById('playOverlay').classList.remove('active');
+}
+
+function renderPlayFrame() {
+  if (!frames[playFrameIdx]) return;
+  const offscreen = document.createElement('canvas');
+  offscreen.width = frames[playFrameIdx].width;
+  offscreen.height = frames[playFrameIdx].height;
+  offscreen.getContext('2d').putImageData(frames[playFrameIdx], 0, 0);
+  pbCtx.clearRect(0, 0, playbackCanvas.width, playbackCanvas.height);
+  pbCtx.drawImage(offscreen, 0, 0, playbackCanvas.width, playbackCanvas.height);
+  document.getElementById('playFrameInfo').textContent = playFrameIdx + 1;
+}
+
+function startPlay() {
+  stopPlay();
+  isPlaying = true;
+  document.getElementById('playPauseBtn').textContent = '⏸ Pause';
+  playInterval = setInterval(() => {
+    playFrameIdx = (playFrameIdx + 1) % frames.length;
+    renderPlayFrame();
+  }, 1000 / fps);
+}
+
+function stopPlay() {
+  isPlaying = false;
+  document.getElementById('playPauseBtn').textContent = '▶ Play';
+  if (playInterval) { clearInterval(playInterval); playInterval = null; }
+}
+
+function togglePlay() {
+  if (isPlaying) stopPlay(); else startPlay();
+}
+
+function stepFrame(dir) {
+  stopPlay();
+  playFrameIdx = (playFrameIdx + dir + frames.length) % frames.length;
+  renderPlayFrame();
+}
+
+// Close on backdrop click
+document.getElementById('playOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closePlayback();
+});
+
+// ═══════════════════════════════════════════
+// GIF EXPORT
+// ═══════════════════════════════════════════
+function exportGif() {
+  saveCurrentFrame();
+  if (typeof GIF === 'undefined') {
+    alert('GIF library not loaded. Try opening as a local file or hosted page.');
+    return;
+  }
+  const scale = Math.min(1, 600 / mainCanvas.width);
+  const w = Math.round(mainCanvas.width * scale);
+  const h = Math.round(mainCanvas.height * scale);
+
+  const gif = new GIF({ workers: 2, quality: 8, width: w, height: h, workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js' });
+
+  frames.forEach(imgData => {
+    const offscreen = document.createElement('canvas');
+    offscreen.width = imgData.width; offscreen.height = imgData.height;
+    offscreen.getContext('2d').putImageData(imgData, 0, 0);
+    const resized = document.createElement('canvas');
+    resized.width = w; resized.height = h;
+    resized.getContext('2d').drawImage(offscreen, 0, 0, w, h);
+    gif.addFrame(resized, { delay: Math.round(1000/fps) });
+  });
+
+  gif.on('finished', blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'pigment-animation.gif';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+  gif.render();
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+initFirstFrame();
+</script>
+</body>
+</html>
